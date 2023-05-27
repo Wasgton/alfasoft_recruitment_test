@@ -44,6 +44,7 @@ class ContactTest extends TestCase
 
     public function test_should_see_delete_contact_button()
     {
+        Contact::factory()->create();
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)->get('/');
@@ -90,7 +91,7 @@ class ContactTest extends TestCase
         $response = $this->actingAs($user)->post(
             route(
             'contacts.store',
-             Contact::factory()->create(['name' => 'a'])->toArray()
+             Contact::factory()->make(['name' => 'a'])->toArray()
             )
         );
         $response->assertRedirect();
@@ -98,21 +99,21 @@ class ContactTest extends TestCase
 
         $response = $this->actingAs($user)->post(route(
             'contacts.store',
-            Contact::factory()->create(['name' => 'ab'])->toArray()
+            Contact::factory()->make(['name' => 'ab'])->toArray()
         ));
         $response->assertRedirect();
         $response->assertSessionHasErrors('name');
 
         $response = $this->actingAs($user)->post(route(
             'contacts.store',
-            Contact::factory()->create(['name' => 'abc'])->toArray()
+            Contact::factory()->make(['name' => 'abc'])->toArray()
         ));
         $response->assertRedirect();
         $response->assertSessionHasErrors('name');
 
         $response = $this->actingAs($user)->post(route(
             'contacts.store',
-            Contact::factory()->create(['name' => 'abcd'])->toArray()
+            Contact::factory()->make(['name' => 'abcd'])->toArray()
         ));
         $response->assertRedirect();
         $response->assertSessionHasErrors('name');
@@ -124,20 +125,16 @@ class ContactTest extends TestCase
         $user = User::factory()->create();
 
         for($i = 1; $i < 9; $i++){
-            $response = $this->actingAs($user)->post(route('contacts.store'),[
-                'name' => $faker->name,
-                'contact' => $faker->regexify('[0-9]{'.$i.'}'),
-                'email' => $faker->unique()->safeEmail(),
-            ]);
+            $response = $this->actingAs($user)->post(route('contacts.store'),
+                Contact::factory()->make(['contact' => $faker->regexify('[0-9]{'.$i.'}')])->toArray()
+               );
             $response->assertRedirect();
             $response->assertSessionHasErrors('contact');
         }
 
-        $response = $this->actingAs($user)->post(route('contacts.store'),[
-            'name' => $faker->name,
-            'contact' => $faker->regexify('[0-9]{10}'),
-            'email' => $faker->unique()->safeEmail(),
-        ]);
+        $response = $this->actingAs($user)->post(route('contacts.store'),
+            Contact::factory()->make(['contact' => $faker->regexify('[0-9]{10}')])->toArray()
+        );
         $response->assertRedirect();
         $response->assertSessionHasErrors('contact');
     }
@@ -147,19 +144,19 @@ class ContactTest extends TestCase
         $faker = \Faker\Factory::create();
         $user = User::factory()->create();
         $response = $this->actingAs($user)->post(route('contacts.store'),
-            Contact::factory()->create(['email' => $faker->word])->toArray()
+            Contact::factory()->make(['email' => $faker->word])->toArray()
         );
         $response->assertRedirect();
         $response->assertSessionHasErrors('email');
 
         $response = $this->actingAs($user)->post(route('contacts.store'),
-            Contact::factory()->create(['email' => $faker->word.'@'])->toArray()
+            Contact::factory()->make(['email' => $faker->word.'@'])->toArray()
         );
         $response->assertRedirect();
         $response->assertSessionHasErrors('email');
 
         $response = $this->actingAs($user)->post(route('contacts.store'),
-            Contact::factory()->create(['email' => $faker->word.$faker->word])->toArray()
+            Contact::factory()->make(['email' => $faker->word.$faker->word])->toArray()
         );
         $response->assertRedirect();
         $response->assertSessionHasErrors('email');
@@ -188,12 +185,106 @@ class ContactTest extends TestCase
     public function test_should_show_edit_page()
     {
         $user = User::factory()->create();
-        $response = $this->actingAs($user)->post(route('contacts.show',['contact'=>1]));
+        $contact = Contact::factory()->create();
+        $response = $this->actingAs($user)->post(route('contacts.show',['contact'=>$contact->id]));
         $response->assertSee($user->name);
         $response->assertSee($user->email);
         $response->assertSee($user->contact);
         $response->assertSee('Update Contact');
     }
+
+    public function test_should_update_contact_with_valid_data()
+    {
+        $user = User::factory()->create();
+        $contact = Contact::factory()->create();
+        $newContactData = Contact::factory()->make();
+
+        $response = $this->actingAs($user)->put(route('contacts.update', $contact->id), $newContactData->toArray());
+
+        $response->assertRedirect();
+        $response->assertSessionHas('success', 'Contact updated successfully');
+    }
+
+    public function test_should_not_update_contact_with_less_than_5_characters()
+    {
+        $user = User::factory()->create();
+        $contact = Contact::factory()->create();
+        $newContactData = Contact::factory()->make(['name'=>'a']);
+
+        $response = $this->actingAs($user)->put(route('contacts.update', $contact), $newContactData->toArray());
+
+        $response->assertSessionHasErrors('name');
+        $this->assertDatabaseMissing('contacts', [
+            'id' => $newContactData->id,
+            'name' => $newContactData->name,
+            'email' => $newContactData->email,
+            'contact' => $newContactData->contact,
+        ]);
+
+        $newContactData = Contact::factory()->make(['name'=>'ab']);
+        $response = $this->actingAs($user)->put(route('contacts.update', $contact), $newContactData->toArray());
+
+        $response->assertRedirect()->assertSessionHasErrors('name');
+        $this->assertDatabaseMissing('contacts', [
+            'id' => $newContactData->id,
+            'name' => $newContactData->name,
+            'email' => $newContactData->email,
+            'contact' => $newContactData->contact,
+        ]);
+
+        $newContactData = Contact::factory()->make(['name'=>'abc']);
+
+        $response = $this->actingAs($user)->put(route('contacts.update', $contact), $newContactData->toArray());
+
+        $response->assertRedirect()->assertSessionHasErrors('name');
+
+        $this->assertDatabaseMissing('contacts', [
+            'id' => $newContactData->id,
+            'name' => $newContactData->name,
+            'email' => $newContactData->email,
+            'contact' => $newContactData->contact,
+        ]);
+
+        $newContactData = Contact::factory()->make(['name'=>'abcd']);
+
+        $response = $this->actingAs($user)->put(route('contacts.update', $contact), $newContactData->toArray());
+
+        $response->assertRedirect()->assertSessionHasErrors('name');
+
+        $this->assertDatabaseMissing('contacts', [
+            'id' => $newContactData->id,
+            'name' => $newContactData->name,
+            'email' => $newContactData->email,
+            'contact' => $newContactData->contact,
+        ]);
+
+    }
+
+    public function test_should_not_update_contact_without_exacly_9_characters()
+    {
+        $faker = \Faker\Factory::create();
+        $user = User::factory()->create();
+
+        for($i = 1; $i < 9; $i++){
+            $contact = Contact::factory()->make(['contact' => $faker->regexify('[0-9]{'.$i.'}')])->toArray();
+
+            $response = $this->actingAs($user)->post(route('contacts.store'),$contact);
+            $response->assertRedirect();
+            $response->assertSessionHasErrors('contact');
+
+            $this->assertDatabaseMissing('contacts', $contact);
+        }
+
+        $contact = Contact::factory()->make(['contact' => $faker->regexify('[0-9]{10}')])->toArray();
+        $response = $this->actingAs($user)->post(route('contacts.store'),$contact);
+
+        $this->assertDatabaseMissing('contacts', $contact);
+        $response->assertRedirect();
+        $response->assertSessionHasErrors('contact');
+    }
+
+
+
 
 
 }
