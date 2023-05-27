@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Route;
 require __DIR__.'/auth.php';
 
 Route::get('/', [ContactsController::class, 'index'])->name('home');
+Route::resource('/contacts', ContactsController::class)->names('contacts');
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');

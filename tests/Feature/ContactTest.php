@@ -163,7 +163,7 @@ class ContactTest extends TestCase
         $response = $this->actingAs($user)->post(route('contacts.store'),Contact::factory()->make()->toArray());
         $response->assertRedirect();
         $response->assertSessionHasNoErrors();
-        $response->assertSee('Contact saved successfully');
+        $response->assertSessionHas(['message'=>'Contact saved successfully']);
     }
 
 
