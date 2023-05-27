@@ -36,12 +36,12 @@
                                     </div>
                                     <div>
                                         <a href="{{route('contacts.edit',['contact'=>$contact->id])}}"
-                                           class="btn-icon mdi mdi-square-edit-outline"></a>
+                                           class="">Edit</a>
                                     </div>
                                     <form action="{{route('contacts.destroy',['contact'=>$contact->id])}}"
                                           method="POST">
                                         @method('DELETE') @csrf
-                                        <button type="button" class="btn-icon btSubmitDeleteItem">
+                                        <button type="button" class="">
                                             Delete Contact
                                         </button>
                                     </form>

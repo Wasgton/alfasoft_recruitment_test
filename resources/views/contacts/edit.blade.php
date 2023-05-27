@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-        <form action="{{route('contact.update', ['contact'=>$contact->id])}}" method="post">
+        <form action="{{route('contacts.update', ['contact'=>$contact->id])}}" method="post">
             @method('put') @csrf
             <div>
                 <div class=" p-4 mb-4">
