@@ -57,5 +57,14 @@ class ContactsController extends Controller
         return redirect()->route('home')->with(['success'=>'Contact updated successfully']);
     }
 
-
+    public function destroy(Contact $contact)
+    {
+        if (!Auth::check()) {
+            return redirect()->back()->with(['error'=>'You must be logged in to delete contacts']);
+        }
+        if (!$contact->delete()) {
+            return redirect()->back()->with(['error'=>'Error to delete contact, try again later.']);
+        }
+        return redirect()->route('home')->with(['success'=>'Contact deleted successfully']);
+    }
 }
