@@ -300,7 +300,7 @@ class ContactTest extends TestCase
         $response = $this->delete(route('contacts.destroy', $contact->id));
         $response->assertRedirect();
         $response->assertSessionHas('error');
-        $this->assertEquals(Session::get('error'),'You must be logged in to view this page');
+        $this->assertEquals(Session::get('error'),'You must be logged in to delete contacts');
         $this->assertNotSoftDeleted($contact);
     }
 
