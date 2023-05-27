@@ -1,6 +1,5 @@
 @extends('layouts.app')
 @section('content')
-    <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
         <div class="fixed top-0 right-0 px-6 py-4 sm:block">
             @auth
                 <a href="{{ url('/home') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Home</a>
@@ -14,14 +13,15 @@
         </div>
 
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+            @auth <button>Create Contact</button> @endauth
             <table class="hover:table-fixed">
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th>Nome</th>
-                        <th>Contato</th>
+                        <th>Name</th>
+                        <th>Contact</th>
                         <th>Email</th>
-                        @auth <th>Ações</th> @endauth
+                        @auth <th>Action</th> @endauth
                     </tr>
                 </thead>
                 <tbody>
@@ -33,15 +33,27 @@
                             <td>{{$contact->email}}</td>
                             @auth
                                 <td>
-
+                                    <div>
+                                        <a href="{{route('contacts.show',['contact'=>$contact->id])}}">
+                                            Details
+                                        </a>
+                                    </div>
+                                    <div>
+                                        <a href="{{route('contacts.edit',['contact'=>$contact->id])}}"
+                                           class="btn-icon mdi mdi-square-edit-outline"></a>
+                                    </div>
+                                    <form action="{{route('contacts.destroy',['contact'=>$contact->id])}}"
+                                          method="POST">
+                                        @method('DELETE') @csrf
+                                        <button type="button" class="btn-icon btSubmitDeleteItem">
+                                            Delete Contact <i class="mdi mdi-trash-can"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             @endauth
                         </tr>
                     @endforeach
                 </tbody>
             </table>
-
         </div>
-    </div>
-
 @endsection

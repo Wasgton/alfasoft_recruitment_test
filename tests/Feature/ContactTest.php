@@ -43,7 +43,7 @@ class ContactTest extends TestCase
         $response->assertStatus(Response::HTTP_OK);
         $response->assertDontSee('Create Contact');
     }
-
+//
     public function test_should_see_delete_contact_button()
     {
         $user = User::factory()->create();
@@ -65,13 +65,23 @@ class ContactTest extends TestCase
     public function test_should_show_contact_details()
     {
         $contact = Contact::factory()->create();
+        $user = User::factory()->create();
 
-        $response = $this->get(route('contacts.show',['contact'=>$contact->id]));
+        $response = $this->actingAs($user)->get(route('contacts.show',['contact'=>$contact->id]));
 
-        $response->assertStatus(Response::HTTP_OK);
         $response->assertSee($contact->name);
         $response->assertSee($contact->contact);
         $response->assertSee($contact->email);
+    }
+
+    public function test_should_not_show_contact_details_if_not_logged_in()
+    {
+        $contact = Contact::factory()->create();
+
+        $response = $this->get(route('contacts.show',['contact'=>$contact->id]));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
     }
 
     /* STORE CONTACT TESTS */
@@ -165,7 +175,6 @@ class ContactTest extends TestCase
         $response->assertSessionHasNoErrors();
         $response->assertSessionHas(['message'=>'Contact saved successfully']);
     }
-
 
     /**/
 
