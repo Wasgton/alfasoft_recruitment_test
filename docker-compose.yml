@@ -8,7 +8,7 @@ services:
        args:
          user: '1000'
          uid: '1000'
-     container_name: laravel_osid
+     container_name: laravel
      tty: true
      volumes:
        - ./:/var/www/html
@@ -17,7 +17,7 @@ services:
 
    nginx:
      image: nginx:stable-alpine
-     container_name: nginx_osid
+     container_name: nginx
      tty: true
      ports:
        - "80:80"
@@ -33,7 +33,7 @@ services:
 
    db:
      build: ./docker/mysql/.
-     container_name: mysql_osid
+     container_name: mysql
      environment:
        - MYSQL_ALLOW_EMPTY_PASSWORD=yes
      networks:

@@ -26,7 +26,9 @@ RUN apt-get install -y \
     libfreetype6-dev \
     g++ \
     nano \
-    cron
+    cron \
+    nodejs \
+    npm
 
 #RUN pecl install xdebug
 #RUN cd $PHP_INI_DIR/conf.d && printf "zend_extension=xdebug;\nxdebug.mode=coverage;" > 99-xdebug.ini
