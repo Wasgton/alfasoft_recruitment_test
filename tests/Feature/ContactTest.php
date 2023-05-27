@@ -203,6 +203,7 @@ class ContactTest extends TestCase
 
         $response->assertRedirect();
         $response->assertSessionHas('success', 'Contact updated successfully');
+        $this->assertDatabaseHas('contacts',$newContactData->toArray());
     }
 
     public function test_should_not_update_contact_with_less_than_5_characters()
