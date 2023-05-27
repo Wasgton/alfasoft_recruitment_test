@@ -284,8 +284,25 @@ class ContactTest extends TestCase
         $response->assertSessionHasErrors('contact');
     }
 
+    public function test_should_soft_delete_contact()
+    {
+        $user = User::factory()->create();
+        $contact = Contact::factory()->create();
+        $response = $this->actingAs($user)->delete(route('contacts.destroy', $contact->id));
+        $response->assertRedirect();
+        $response->assertSessionHas('success', 'Contact deleted successfully');
+        $this->assertSoftDeleted($contact);
+    }
 
-
+    public function test_should_not_delete_contact_if_not_logged_in()
+    {
+        $contact = Contact::factory()->create();
+        $response = $this->delete(route('contacts.destroy', $contact->id));
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
+        $this->assertEquals(Session::get('error'),'You must be logged in to view this page');
+        $this->assertNotSoftDeleted($contact);
+    }
 
 
 }
