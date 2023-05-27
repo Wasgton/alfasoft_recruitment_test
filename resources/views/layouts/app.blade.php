@@ -6,7 +6,6 @@
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
-
         <!-- Fonts -->
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
 
@@ -16,57 +15,50 @@
         <!-- Scripts -->
         <script src="{{ asset('js/app.js') }}" defer></script>
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
-
-            <!-- Page Heading -->
-            <header class="bg-white shadow">
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
-                        @auth
-                            <div>
-                                <a href="{{ url('/') }}"
-                                   class="text-sm text-gray-700 dark:text-gray-500 underline">
-                                    Home
-                                </a>
-                            </div>
-                            <div>
-                                <form action="{{route('logout')}}" method="post">
-                                    @method('post') @csrf
-                                    <button type="submit" class="text-sm text-gray-700 dark:text-gray-500 underline">
-                                        Log out
-                                    </button>
-                                </form>
-                            </div>
-                        @else
-                            <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Log in</a>
-
-                            @if (Route::has('register'))
-                                <a href="{{ route('register') }}" class="ml-4 text-sm text-gray-700 dark:text-gray-500 underline">Register</a>
-                            @endif
-                        @endauth
-                    </div>
+    <body class="bg-gray-100">
+        <div class="flex justify-between bg-blue-500 p-4">
+            <a href="{{ route('home') }}"
+               class="bg-white text-blue-500 font-semibold py-2 px-4 border border-blue-500 rounded shadow">
+                Home
+            </a>
+            @guest
+                <div class="py-2 px-4 border border-blue-500 rounded shadow">
+                    <a href="{{ route('login') }}"
+                       class="bg-white text-blue-500 font-semibold py-2 px-4 border border-blue-500 rounded shadow">
+                        Log in
+                    </a>
+                    <a href="{{ route('register') }}" class="bg-white text-blue-500 font-semibold py-2 px-4 border border-blue-500 rounded shadow">
+                        Register
+                    </a>
                 </div>
-            </header>
-
-            <!-- Page Content -->
-            <main>
-                <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900
-                sm:items-center py-4 sm:pt-0">
-                    <div>
-                        @if($errors->any())
-                            <div class="bg-red-500 text-white p-4 mb-4">
-                                <ul>
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-                    </div>
-                    @yield('content')
+            @endguest
+            @auth
+                <div>
+                    <form action="{{route('logout')}}" method="post">
+                        @method('post') @csrf
+                        <button type="submit" class="bg-white text-blue-500 font-semibold py-2 px-4 border border-blue-500 rounded shadow">
+                            Log out
+                        </button>
+                    </form>
                 </div>
-            </main>
+            @endauth
         </div>
+        <main class="flex justify-center mt-8">
+            <div class="w-2/3">
+
+                    @if($errors->any())
+                    <div>
+                        <div class="bg-red-100 text-red-700 mb-4 p-4 rounded">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                    @endif
+                @yield('content')
+            </div>
+        </main>
     </body>
 </html>

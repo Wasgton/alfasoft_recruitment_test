@@ -21,7 +21,3 @@ Route::get('/', [ContactsController::class, 'index'])->name('home');
 Route::resource('/contacts', ContactsController::class)->names('contacts');
 
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth'])->name('dashboard');
-
