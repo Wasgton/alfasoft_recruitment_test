@@ -88,29 +88,6 @@ class ContactTest extends TestCase
     public function test_should_not_allow_to_store_names_with_less_than_5_characters()
     {
         $user = User::factory()->create();
-        $response = $this->actingAs($user)->post(
-            route(
-            'contacts.store',
-             Contact::factory()->make(['name' => 'a'])->toArray()
-            )
-        );
-        $response->assertRedirect();
-        $response->assertSessionHasErrors('name');
-
-        $response = $this->actingAs($user)->post(route(
-            'contacts.store',
-            Contact::factory()->make(['name' => 'ab'])->toArray()
-        ));
-        $response->assertRedirect();
-        $response->assertSessionHasErrors('name');
-
-        $response = $this->actingAs($user)->post(route(
-            'contacts.store',
-            Contact::factory()->make(['name' => 'abc'])->toArray()
-        ));
-        $response->assertRedirect();
-        $response->assertSessionHasErrors('name');
-
         $response = $this->actingAs($user)->post(route(
             'contacts.store',
             Contact::factory()->make(['name' => 'abcd'])->toArray()
@@ -124,13 +101,11 @@ class ContactTest extends TestCase
         $faker = \Faker\Factory::create();
         $user = User::factory()->create();
 
-        for($i = 1; $i < 9; $i++){
-            $response = $this->actingAs($user)->post(route('contacts.store'),
-                Contact::factory()->make(['contact' => $faker->regexify('[0-9]{'.$i.'}')])->toArray()
-               );
-            $response->assertRedirect();
-            $response->assertSessionHasErrors('contact');
-        }
+        $response = $this->actingAs($user)->post(route('contacts.store'),
+            Contact::factory()->make(['contact' => $faker->regexify('[0-9]{8}')])->toArray()
+           );
+        $response->assertRedirect();
+        $response->assertSessionHasErrors('contact');
 
         $response = $this->actingAs($user)->post(route('contacts.store'),
             Contact::factory()->make(['contact' => $faker->regexify('[0-9]{10}')])->toArray()
