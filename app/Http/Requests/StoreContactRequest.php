@@ -26,8 +26,15 @@ class StoreContactRequest extends FormRequest
     {
         return [
             'name'=>'required|string|max:255|min:5',
-            'email'=>'required|string|email',
+            'email'=>'required|string|email|unique:contacts,email',
             'contact'=>'required|string|digits:9|numeric',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+          'unique'=>'This :attribute has already been registered'
         ];
     }
 }
