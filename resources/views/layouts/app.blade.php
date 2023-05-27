@@ -41,10 +41,20 @@
 
             <!-- Page Content -->
             <main>
-                <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
-
-                @yield('content')
-
+                <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900
+                sm:items-center py-4 sm:pt-0">
+                    <div>
+                        @if($errors->any())
+                            <div class="bg-red-500 text-white p-4 mb-4">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                    </div>
+                    @yield('content')
                 </div>
             </main>
         </div>

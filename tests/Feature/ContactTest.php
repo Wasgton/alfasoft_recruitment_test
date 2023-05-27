@@ -5,8 +5,6 @@ namespace Tests\Feature;
 use App\Models\Contact;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Session;
 use Symfony\Component\HttpFoundation\Response;
 use Tests\TestCase;
@@ -43,7 +41,7 @@ class ContactTest extends TestCase
         $response->assertStatus(Response::HTTP_OK);
         $response->assertDontSee('Create Contact');
     }
-//
+
     public function test_should_see_delete_contact_button()
     {
         $user = User::factory()->create();
@@ -173,9 +171,29 @@ class ContactTest extends TestCase
         $response = $this->actingAs($user)->post(route('contacts.store'),Contact::factory()->make()->toArray());
         $response->assertRedirect();
         $response->assertSessionHasNoErrors();
-        $response->assertSessionHas(['message'=>'Contact saved successfully']);
+        $response->assertSessionHas(['success'=>'Contact saved successfully']);
     }
 
-    /**/
+    /*UPDATE CONTACT TESTS*/
+
+    public function test_should_not_allow_to_see_edit_page_if_not_logged_in()
+    {
+        $contact = Contact::factory()->create();
+        $response = $this->get(route('contacts.show',['contact'=>$contact->id]));
+        $response->assertRedirect();
+        $response->assertSessionHas('error');
+        $this->assertEquals(Session::get('error'),'You must be logged in to view this page');
+    }
+
+    public function test_should_show_edit_page()
+    {
+        $user = User::factory()->create();
+        $response = $this->actingAs($user)->post(route('contacts.show',['contact'=>1]));
+        $response->assertSee($user->name);
+        $response->assertSee($user->email);
+        $response->assertSee($user->contact);
+        $response->assertSee('Update Contact');
+    }
+
 
 }

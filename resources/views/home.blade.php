@@ -13,14 +13,12 @@
         </div>
 
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-            @auth <button>Create Contact</button> @endauth
+            @auth <a href="{{route('contacts.create')}}">Create Contact</a> @endauth
             <table class="hover:table-fixed">
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>Name</th>
-                        <th>Contact</th>
-                        <th>Email</th>
                         @auth <th>Action</th> @endauth
                     </tr>
                 </thead>
@@ -29,8 +27,6 @@
                         <tr>
                             <td></td>
                             <td>{{$contact->name}}</td>
-                            <td>{{$contact->contact}}</td>
-                            <td>{{$contact->email}}</td>
                             @auth
                                 <td>
                                     <div>
@@ -46,7 +42,7 @@
                                           method="POST">
                                         @method('DELETE') @csrf
                                         <button type="button" class="btn-icon btSubmitDeleteItem">
-                                            Delete Contact <i class="mdi mdi-trash-can"></i>
+                                            Delete Contact
                                         </button>
                                     </form>
                                 </td>
